@@ -7,15 +7,14 @@ const UserController = {
       res.json({ success: false, message: "Please enter email or password" });
     } else {
       try {
-        console.log('frank')
-        let newUser = new User();
-        newUser.name = req.body.name;
-        newUser.email = req.body.email;
-        newUser.password = req.body.password;
-        await User.insert(newUser)
+        const user = new User({
+          name: req.body.name,
+          email: req.body.email,
+          password: req.body.password
+        })
+        await User.insert(user)
         res.json({
           success: true,
-          token: token,
           message: "Successfully created a new user"
         });
       } catch (err) {

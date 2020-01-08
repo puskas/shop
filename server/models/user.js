@@ -5,7 +5,7 @@ const PasswordComplexity = require('joi-password-complexity')
 
 class User {
   constructor(obj) {
-    this.id = obj.id || null,
+    this.iduser = obj.iduser || null,
     this.name = obj.name || '',
     this.email = obj.email || '',
     this.password = obj.password || ''
