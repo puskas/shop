@@ -1,7 +1,9 @@
+const dotenv = require('dotenv');
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 
+dotenv.config();
 const app = express();
 
 // Middlewares
@@ -10,13 +12,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // require apis
-app.get("/", (req, res) => {
-  res.json("hello amazon");
-})
-
-app.post("/", (req, res) => {
-  console.log(req.body.name);
-})
+const router = express.Router();
+require('./routes')(app, router)
 
 app.listen(4000, err => {
   if (err) {
