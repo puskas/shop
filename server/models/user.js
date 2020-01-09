@@ -12,20 +12,25 @@ class User {
   }
 
   validate () {
+    const complexityOptions = {
+      min: 8,
+      max: 30,
+      lowerCase: 1,
+      upperCase: 1,
+      numeric: 1,
+      symbol: 1,
+      requirementCount: 4
+    }
     const schema = {
-      id: Joi.optional(),
+      iduser: Joi.optional(),
       name: Joi.string().min(5).max(20).required(),
       email: Joi.string().email().required(),
-      password: Joi.string().min(8).max(20).required(),
-      created: Joi.date().required(),
-      groupId: Joi.number().required()
+      password: new PasswordComplexity(complexityOptions).required()
     }
-    const {error} = Joi.validate(this.password, new PasswordComplexity())
-    if (error) return {error}
     return Joi.validate(this, schema)
   }
 
-  generateAuthToken () {
+  generateAuthToken (){
     return jwt.sign({ id: this.id}, process.env.JWT_SECRET)
   }
 }
