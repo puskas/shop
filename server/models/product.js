@@ -17,10 +17,10 @@ class Product {
       idproduct: Joi.optional(),
       title: Joi.string().min(2).max(45).required(),
       description: Joi.string().min(5).max(100).required(),
-      photo: Joi.string().min(2).max(255).optional(),
+      photo: Joi.string().max(255).optional(),
       price: Joi.number().positive().required(),
-      stockquantity: Joi.number().positive().required(),
-      rating : Joi.number().positive()
+      stockquantity: Joi.number().integer().min(0).required(),
+      rating : Joi.number().integer().min(0)
     }
     return Joi.validate(this, schema)
   }

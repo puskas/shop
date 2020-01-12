@@ -1,40 +1,30 @@
 const Product = require('../models/product')
 const Joi = require('joi')
+const fs = require('fs')
 
 const ProductController = {
   add: async (req, res, next) => {
     try {
-      const Product = new Product({
+      const product = new Product({
         title: req.body.title,
         description: req.body.description,
-        photo: req.body.photo,
+        photo: req.file.path,
         price: req.body.price,
-        stockquantity: req.body.stockquantity
+        stockquantity: req.body.stockquantity,        
       })
       const {error} = product.validate()
-      if (error) return res.status(401).send(error.details[0].message)
-      const results = await User.insert(user)
+      if (error) throw new EvalError (error.details[0].message)
+      const results = await Product.add(product)
       product.id = results.insertId
       res.send(`product created with id ${product.id}`)
-    } catch (err) {
-      if (err.errno === 1062) {
+    } catch (error) {
+      removeImage(req.file.path, (err) => {if (err) return console.log(err)})
+      if (error instanceof EvalError) {
+        res.status(401).send(error.message)
+      } else if (error.errno === 401) {
         res.status(409).send('Product already exist')
       } else {
-        res.status(500).send('Error on insert db')
-      }
-    }
-
-    const {error} = group.validate()
-    if (error) return res.status(400).send(error.details[0].message)
-    try {
-      const results = await Group.add(group)
-      group.id = results.insertId
-      res.send(_.pick(group, ['id', 'name']))
-    } catch (error) {
-      if (error.errno === 1062) {
-        res.status(409).send('Group already exist')
-      } else {
-        res.status(500).send('Error on insert db')
+        res.status(500).send(`Error on insert db ${error}`)
       }
     }
   },
@@ -60,23 +50,12 @@ const ProductController = {
     catch (error) {
         res.status(500).send('Error on insert db')
     }
-  },
-  get: (req, res, next) => {
-    db.query('select * from `group`', (error, results) => {
-      if (error) {
-        return res.status(500).json({type: 'error', error})
-      }
-      res.json({type: 'success', message: 'Test OK', results})
-    })
   }
 }
 
-function validate(group) {
-  const schema = {
-    email: Joi.string().email().required(),
-    password: Joi.string().min(8).max(20).required()
-  }
-  return Joi.validate(user, schema)
+const removeImage = (image, cb) => {
+    fs.unlink(image, cb)
+    console.log('deleted')
 }
 
 module.exports = ProductController
